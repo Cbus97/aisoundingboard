@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ideas — AI Sounding Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans', sans-serif;background:#080C14;color:#F0F4FF;overflow-x:hidden}
+
+/* NAV */
+#nav{background:#0D1220;border-bottom:1px solid #1E2A3A;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+#nav a{text-decoration:none}
+#nav button{background:#00E5A0;color:#080C14;border:none;border-radius:2rem;padding:0.5rem 1.4rem;font-family:'DM Sans', sans-serif;font-weight:500;font-size:0.95rem;cursor:pointer}
+
+/* HERO */
+#hero{background:#080C14;padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid #1E2A3A}
+.tag{display:inline-block;background:#0D2A1F;border:1px solid #00E5A040;border-radius:2rem;padding:0.3rem 1rem;font-size:0.78rem;color:#00E5A0;letter-spacing:0.05em;margin-bottom:1.5rem}
+#hero h1{font-family:'Bebas Neue', sans-serif;font-size:clamp(2.8rem, 7vw, 5.5rem);line-height:0.95;color:#F0F4FF;margin-bottom:1rem}
+#hero h1 i{color:#00E5A0;font-style:normal}
+#hero p{font-size:1.15rem;color:#8B9AB8;max-width:540px;margin:0 auto;line-height:1.7;font-weight:300}
+
+/* FILTERS */
+#filters{background:#0D1220;border-bottom:1px solid #1E2A3A;padding:2rem;position:sticky;top:65px;z-index:90}
+.filters-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:1rem}
+.filter-row{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap}
+.filter-label{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#8B9AB8;min-width:70px}
+.filter-btn{background:transparent;border:1px solid #1E2A3A;border-radius:2rem;padding:0.35rem 0.9rem;font-family:'DM Sans', sans-serif;font-size:0.8rem;color:#8B9AB8;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.filter-btn:hover{border-color:#00E5A040;color:#F0F4FF}
+.filter-btn.active{background:#00E5A0;border-color:#00E5A0;color:#080C14;font-weight:500}
+.filter-clear{background:transparent;border:none;font-family:'DM Sans', sans-serif;font-size:0.78rem;color:#8B9AB8;cursor:pointer;text-decoration:underline;margin-left:auto}
+.filter-clear:hover{color:#F0F4FF}
+
+/* RESULTS */
+#results-bar{max-width:1100px;margin:2rem auto 0;padding:0 2rem;display:flex;align-items:center;justify-content:space-between}
+#result-count{font-size:0.92rem;color:#8B9AB8}
+#result-count b{color:#00E5A0}
+
+/* GRID */
+#grid-wrap{padding:1.5rem 2rem 6rem;max-width:1100px;margin:0 auto}
+#card-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:1.4rem}
+
+/* CARDS */
+.use-card{background:#0D1220;border:1px solid #1E2A3A;border-radius:16px;padding:1.6rem;display:flex;flex-direction:column;gap:1rem;transition:all 0.25s;cursor:default}
+.use-card:hover{border-color:#00E5A040;transform:translateY(-3px)}
+.use-card.hidden{display:none}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.card-icon{width:44px;height:44px;min-width:44px;border-radius:10px;background:#0A2A1A;border:1px solid #00E5A030;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.card-badges{display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:flex-end}
+.badge-industry{font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:2rem;background:#001A2A;color:#00B8FF;border:1px solid #00B8FF25}
+.badge-problem{font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:2rem;background:#0A2A1A;color:#00E5A0;border:1px solid #00E5A025}
+.card-title{font-size:1rem;font-weight:500;color:#F0F4FF;line-height:1.3}
+.card-problem{font-size:0.92rem;color:#8B9AB8;font-weight:300}
+.card-divider{height:1px;background:#1E2A3A}
+.card-solution{font-size:0.98rem;color:#8B9AB8;line-height:1.65}
+.card-solution strong{color:#F0F4FF;font-weight:500;display:block;margin-bottom:0.3rem}
+.card-result{display:flex;align-items:center;gap:0.5rem;background:#080C14;border-radius:8px;padding:0.6rem 0.8rem;margin-top:0.2rem}
+.card-result-num{font-family:'Bebas Neue', sans-serif;font-size:1.5rem;color:#00E5A0;line-height:1}
+.card-result-text{font-size:0.78rem;color:#8B9AB8;line-height:1.3}
+
+/* EMPTY STATE */
+#empty{display:none;text-align:center;padding:5rem 2rem;color:#8B9AB8}
+#empty h3{font-family:'Bebas Neue', sans-serif;font-size:2rem;color:#F0F4FF;margin-bottom:0.5rem}
+
+/* BOTTOM CTA */
+#bottom-cta{background:#0A1F15;border-top:1px solid #00E5A025;border-bottom:1px solid #00E5A025;padding:5rem 2rem;text-align:center}
+#bottom-cta h2{font-family:'Bebas Neue', sans-serif;font-size:clamp(2rem, 5vw, 3.5rem);color:#F0F4FF;margin-bottom:1rem;line-height:1}
+#bottom-cta p{color:#8B9AB8;font-size:1rem;max-width:500px;margin:0 auto 2rem;font-weight:300;line-height:1.7}
+.bp{background:#00E5A0;color:#080C14;border:none;border-radius:2rem;padding:0.9rem 2.2rem;font-family:'DM Sans', sans-serif;font-weight:500;font-size:1rem;cursor:pointer;transition:opacity 0.2s}
+.bp:hover{opacity:0.85}
+
+footer{background:#0D1220;border-top:1px solid #1E2A3A;padding:1.5rem 2rem;text-align:center;font-size:0.78rem;color:#8B9AB8}
+footer b{color:#00E5A0;font-weight:400}
+
+@media(max-width:768px){
+  .hide-mobile{display:none !important}
+  #filters{position:relative;top:0;padding:1.2rem}
+  #card-grid{grid-template-columns:1fr}
+  .filter-row{gap:0.4rem}
+  .filter-btn{font-size:0.72rem;padding:0.3rem 0.7rem}
+  .filter-label{min-width:55px;font-size:0.65rem}
+  #hero{padding:3rem 1.2rem 2rem}
+  #grid-wrap{padding:1rem 1.2rem 4rem}
+  #bottom-cta{padding:3rem 1.2rem}
+  .card-badges{justify-content:flex-start}
+  .use-card{padding:1.2rem}
+}
+@media(max-width:480px){
+  .filter-clear{display:block;width:100%;text-align:left;margin:0.3rem 0 0}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <a href="index.html">
+    <svg width="250" height="52" viewBox="0 0 210 44" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="1" width="40" height="42" rx="7" fill="#00E5A0"/>
+      <rect x="7"  y="14" width="3.5" height="10" rx="1.8" fill="#080C14"/>
+      <rect x="12" y="9"  width="3.5" height="20" rx="1.8" fill="#080C14"/>
+      <rect x="17" y="5"  width="3.5" height="28" rx="1.8" fill="#080C14"/>
+      <rect x="22" y="11" width="3.5" height="16" rx="1.8" fill="#080C14"/>
+      <rect x="27" y="18" width="3.5" height="8"  rx="1.8" fill="#080C14"/>
+      <rect x="32" y="12" width="3.5" height="14" rx="1.8" fill="#080C14"/>
+      <text x="50" y="18" font-family="'DM Sans',sans-serif" font-size="12" fill="#00E5A0" letter-spacing="1.5" font-weight="700">AI</text>
+      <text x="49" y="36" font-family="'DM Sans',sans-serif" font-size="16" fill="#F0F4FF" font-weight="500" letter-spacing="-0.4">Sounding Board</text>
+    </svg>
+  </a>
+  <div style="display:flex;align-items:center;gap:1.5rem">
+    <a href="index.html" class="hide-mobile" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Home</a>
+    <a href="ai-ideas.html" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#00E5A0;text-decoration:none;font-weight:500">Solutions</a>
+    <a href="about.html" class="hide-mobile" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">About</a>
+    <a href="contact.html" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Book a Call</a>
+    <button onclick="window.location='index.html#final'">Book Free Call</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="tag">💡 Real problems.&nbsp; Real AI solutions.</div>
+  <h1>SEE WHAT AI CAN DO<br>FOR <i>YOUR</i> BUSINESS</h1>
+  <p>Browse real-world examples of how AI is solving everyday business problems — filtered by your industry or the challenge you're facing.</p>
+</div>
+
+<!-- FILTERS -->
+<div id="filters">
+  <div class="filters-inner">
+    <div class="filter-row">
+      <span class="filter-label">Industry</span>
+      <button class="filter-btn active" data-filter="industry" data-value="all">All</button>
+      <button class="filter-btn" data-filter="industry" data-value="roofing">Roofing</button>
+      <button class="filter-btn" data-filter="industry" data-value="restaurant">Restaurants</button>
+      <button class="filter-btn" data-filter="industry" data-value="dental">Dental / Medical</button>
+      <button class="filter-btn" data-filter="industry" data-value="legal">Legal</button>
+      <button class="filter-btn" data-filter="industry" data-value="realestate">Real Estate</button>
+      <button class="filter-btn" data-filter="industry" data-value="hvac">HVAC / Plumbing</button>
+      <button class="filter-btn" data-filter="industry" data-value="retail">Retail</button>
+      <button class="filter-btn" data-filter="industry" data-value="fitness">Fitness / Gyms</button>
+      <button class="filter-btn" data-filter="industry" data-value="auto">Auto</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Problem</span>
+      <button class="filter-btn active" data-filter="problem" data-value="all">All</button>
+      <button class="filter-btn" data-filter="problem" data-value="missedcalls">Missed Calls</button>
+      <button class="filter-btn" data-filter="problem" data-value="followup">Slow Follow-Up</button>
+      <button class="filter-btn" data-filter="problem" data-value="reviews">Bad Reviews</button>
+      <button class="filter-btn" data-filter="problem" data-value="booking">Manual Booking</button>
+      <button class="filter-btn" data-filter="problem" data-value="repetitive">Repetitive Questions</button>
+      <button class="filter-btn" data-filter="problem" data-value="noshows">No-Shows</button>
+      <button class="filter-btn" data-filter="problem" data-value="quotes">Slow Quotes</button>
+      <button class="filter-btn" data-filter="problem" data-value="social">Social Media</button>
+      <button class="filter-clear" id="clear-btn">Clear filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS BAR -->
+<div id="results-bar">
+  <div id="result-count">Showing <b id="count-num">20</b> use cases</div>
+</div>
+
+<!-- CARD GRID -->
+<div id="grid-wrap">
+  <div id="card-grid">
+
+    <!-- ROOFING -->
+    <div class="use-card" data-industry="roofing" data-problem="missedcalls">
+      <div class="card-top">
+        <div class="card-icon">📞</div>
+        <div class="card-badges"><span class="badge-industry">Roofing</span><span class="badge-problem">Missed Calls</span></div>
+      </div>
+      <div class="card-title">Never miss a storm-damage lead again</div>
+      <div class="card-problem">After a storm hits, calls flood in — but your crew is in the field.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Voice Receptionist</strong>Answers every call 24/7, collects the homeowner's address and damage details, and books an inspection — all without a human lifting a finger.</div>
+      <div class="card-result"><div class="card-result-num">3×</div><div class="card-result-text">more leads captured during peak storm season</div></div>
+    </div>
+
+    <div class="use-card" data-industry="roofing" data-problem="quotes">
+      <div class="card-top">
+        <div class="card-icon">📋</div>
+        <div class="card-badges"><span class="badge-industry">Roofing</span><span class="badge-problem">Slow Quotes</span></div>
+      </div>
+      <div class="card-title">Instant ballpark estimates before the site visit</div>
+      <div class="card-problem">Customers want a price range before they commit to an appointment.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Chatbot + Estimator</strong>Collects roof size, material preference, and location, then delivers an instant ballpark range and books the in-person quote — warming the lead before you arrive.</div>
+      <div class="card-result"><div class="card-result-num">40%</div><div class="card-result-text">higher appointment show rate vs cold bookings</div></div>
+    </div>
+
+    <!-- RESTAURANTS -->
+    <div class="use-card" data-industry="restaurant" data-problem="repetitive">
+      <div class="card-top">
+        <div class="card-icon">🍽️</div>
+        <div class="card-badges"><span class="badge-industry">Restaurant</span><span class="badge-problem">Repetitive Questions</span></div>
+      </div>
+      <div class="card-title">Stop answering "What are your hours?" 40 times a day</div>
+      <div class="card-problem">Staff spend hours on calls about hours, menus, and reservations instead of serving guests.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Phone + Chat Agent</strong>Handles hours, specials, dietary questions, and reservation bookings automatically — freeing your team for the dining room.</div>
+      <div class="card-result"><div class="card-result-num">80%</div><div class="card-result-text">of inbound calls handled without staff involvement</div></div>
+    </div>
+
+    <div class="use-card" data-industry="restaurant" data-problem="reviews">
+      <div class="card-top">
+        <div class="card-icon">⭐</div>
+        <div class="card-badges"><span class="badge-industry">Restaurant</span><span class="badge-problem">Bad Reviews</span></div>
+      </div>
+      <div class="card-title">Turn happy diners into 5-star reviewers automatically</div>
+      <div class="card-problem">You deliver great food but rarely ask for reviews — and the few who leave them are the unhappy ones.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Reputation Management</strong>After each visit, an automated text thanks the guest and invites a Google review — with smart routing that catches complaints privately before they go public.</div>
+      <div class="card-result"><div class="card-result-num">2×</div><div class="card-result-text">review volume within 60 days</div></div>
+    </div>
+
+    <!-- DENTAL -->
+    <div class="use-card" data-industry="dental" data-problem="booking">
+      <div class="card-top">
+        <div class="card-icon">🦷</div>
+        <div class="card-badges"><span class="badge-industry">Dental</span><span class="badge-problem">Manual Booking</span></div>
+      </div>
+      <div class="card-title">Fill your schedule without tying up your front desk</div>
+      <div class="card-problem">Patients call or text to book, reschedule, and confirm — overwhelming your receptionist.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Scheduling Agent</strong>Books, reschedules, and sends appointment reminders automatically via text and voice — integrated directly with your existing practice management software.</div>
+      <div class="card-result"><div class="card-result-num">30%</div><div class="card-result-text">reduction in front-desk call volume</div></div>
+    </div>
+
+    <div class="use-card" data-industry="dental" data-problem="noshows">
+      <div class="card-top">
+        <div class="card-icon">📅</div>
+        <div class="card-badges"><span class="badge-industry">Dental</span><span class="badge-problem">No-Shows</span></div>
+      </div>
+      <div class="card-title">Cut no-shows with smart automated reminders</div>
+      <div class="card-problem">Empty chairs cost $150–$400 per slot.&nbsp; Manual reminder calls don't scale.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Reminder Sequences</strong>Multi-touch reminder sequences via text and voice — 48hrs out, 24hrs out, and day-of — with one-tap confirm or reschedule so the slot never goes empty.</div>
+      <div class="card-result"><div class="card-result-num">60%</div><div class="card-result-text">fewer no-shows after 30 days</div></div>
+    </div>
+
+    <!-- LEGAL -->
+    <div class="use-card" data-industry="legal" data-problem="followup">
+      <div class="card-top">
+        <div class="card-icon">⚖️</div>
+        <div class="card-badges"><span class="badge-industry">Legal</span><span class="badge-problem">Slow Follow-Up</span></div>
+      </div>
+      <div class="card-title">Follow up with every lead before a competitor does</div>
+      <div class="card-problem">Potential clients fill out your contact form — then wait days to hear back and hire someone else.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Lead Nurture Automation</strong>Instant automated response the moment a form is submitted — qualifies the case type, answers FAQs, and books a consultation while the lead is still warm.</div>
+      <div class="card-result"><div class="card-result-num">5min</div><div class="card-result-text">average response time vs industry avg of 47 hours</div></div>
+    </div>
+
+    <div class="use-card" data-industry="legal" data-problem="repetitive">
+      <div class="card-top">
+        <div class="card-icon">💬</div>
+        <div class="card-badges"><span class="badge-industry">Legal</span><span class="badge-problem">Repetitive Questions</span></div>
+      </div>
+      <div class="card-title">Answer common legal questions without billing hours</div>
+      <div class="card-problem">Staff field the same intake questions all day — costing attorney time on non-billable work.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Intake Chatbot</strong>Handles FAQs, collects case details, and pre-qualifies prospects before they ever speak to an attorney — saving hours of non-billable intake time per week.</div>
+      <div class="card-result"><div class="card-result-num">8hrs</div><div class="card-result-text">saved per week on intake and FAQ handling</div></div>
+    </div>
+
+    <!-- REAL ESTATE -->
+    <div class="use-card" data-industry="realestate" data-problem="missedcalls">
+      <div class="card-top">
+        <div class="card-icon">🏠</div>
+        <div class="card-badges"><span class="badge-industry">Real Estate</span><span class="badge-problem">Missed Calls</span></div>
+      </div>
+      <div class="card-title">Capture buyer inquiries around the clock</div>
+      <div class="card-problem">Buyers call at 9pm about a listing.&nbsp; You're off the clock.&nbsp; They call the next agent.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Voice + Chat Agent</strong>Available 24/7 to answer listing questions, schedule showings, and qualify buyer intent — so no lead goes cold while you sleep.</div>
+      <div class="card-result"><div class="card-result-num">24/7</div><div class="card-result-text">lead capture with zero after-hours staffing cost</div></div>
+    </div>
+
+    <div class="use-card" data-industry="realestate" data-problem="followup">
+      <div class="card-top">
+        <div class="card-icon">🔁</div>
+        <div class="card-badges"><span class="badge-industry">Real Estate</span><span class="badge-problem">Slow Follow-Up</span></div>
+      </div>
+      <div class="card-title">Nurture your cold leads until they're ready to buy</div>
+      <div class="card-problem">Most buyers aren't ready now — but agents forget to follow up 3 months later.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Long-Term Nurture Sequences</strong>Automated, personalized follow-up over weeks and months — market updates, new listings, check-ins — keeping you top of mind until they're ready to move.</div>
+      <div class="card-result"><div class="card-result-num">35%</div><div class="card-result-text">of closed deals come from leads older than 90 days</div></div>
+    </div>
+
+    <!-- HVAC -->
+    <div class="use-card" data-industry="hvac" data-problem="missedcalls">
+      <div class="card-top">
+        <div class="card-icon">❄️</div>
+        <div class="card-badges"><span class="badge-industry">HVAC</span><span class="badge-problem">Missed Calls</span></div>
+      </div>
+      <div class="card-title">Never miss an emergency service call again</div>
+      <div class="card-problem">AC goes out at midnight in July.&nbsp; Customer calls you.&nbsp; No answer.&nbsp; They call a competitor.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Emergency Dispatch Voice Agent</strong>Answers after-hours calls, triages urgency, collects address and issue details, and either dispatches on-call staff or books the first available appointment.</div>
+      <div class="card-result"><div class="card-result-num">$900</div><div class="card-result-text">avg value of an emergency HVAC service call captured</div></div>
+    </div>
+
+    <div class="use-card" data-industry="hvac" data-problem="quotes">
+      <div class="card-top">
+        <div class="card-icon">🔧</div>
+        <div class="card-badges"><span class="badge-industry">HVAC</span><span class="badge-problem">Slow Quotes</span></div>
+      </div>
+      <div class="card-title">Speed up estimate requests with AI-assisted intake</div>
+      <div class="card-problem">Customers want a quote fast.&nbsp; Playing phone tag to get system details slows everything down.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Intake + Quoting Assistant</strong>Collects system age, issue type, square footage, and photos via chat — giving your tech everything needed before they arrive, cutting visit time in half.</div>
+      <div class="card-result"><div class="card-result-num">50%</div><div class="card-result-text">faster quote turnaround time</div></div>
+    </div>
+
+    <!-- RETAIL -->
+    <div class="use-card" data-industry="retail" data-problem="repetitive">
+      <div class="card-top">
+        <div class="card-icon">🛍️</div>
+        <div class="card-badges"><span class="badge-industry">Retail</span><span class="badge-problem">Repetitive Questions</span></div>
+      </div>
+      <div class="card-title">Handle order status and product questions automatically</div>
+      <div class="card-problem">Your inbox is full of "Where's my order?" and "Do you have this in blue?" emails.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Customer Service Chatbot</strong>Integrates with your inventory and order system to answer product, availability, and shipping questions instantly — 24/7, without a support team.</div>
+      <div class="card-result"><div class="card-result-num">70%</div><div class="card-result-text">of support tickets resolved without human involvement</div></div>
+    </div>
+
+    <div class="use-card" data-industry="retail" data-problem="social">
+      <div class="card-top">
+        <div class="card-icon">📱</div>
+        <div class="card-badges"><span class="badge-industry">Retail</span><span class="badge-problem">Social Media</span></div>
+      </div>
+      <div class="card-title">Keep your social presence active without the time sink</div>
+      <div class="card-problem">You know you need to post consistently but you're running a store, not a content studio.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Social Content Generator</strong>Automatically creates on-brand product posts, promotions, and seasonal content from your inventory feed — scheduled and posted without lifting a finger.</div>
+      <div class="card-result"><div class="card-result-num">5hrs</div><div class="card-result-text">saved per week on social media management</div></div>
+    </div>
+
+    <!-- FITNESS -->
+    <div class="use-card" data-industry="fitness" data-problem="noshows">
+      <div class="card-top">
+        <div class="card-icon">💪</div>
+        <div class="card-badges"><span class="badge-industry">Fitness</span><span class="badge-problem">No-Shows</span></div>
+      </div>
+      <div class="card-title">Fill every class — even when members cancel last minute</div>
+      <div class="card-problem">Classes run half-empty.&nbsp; Waitlists exist but filling cancelled spots is manual and slow.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Waitlist & Fill Automation</strong>Instantly notifies waitlisted members when a spot opens, auto-fills the class, and sends a confirmation — all before you'd even have time to make the call yourself.</div>
+      <div class="card-result"><div class="card-result-num">90%</div><div class="card-result-text">class fill rate vs 65% without automation</div></div>
+    </div>
+
+    <div class="use-card" data-industry="fitness" data-problem="followup">
+      <div class="card-top">
+        <div class="card-icon">🏃</div>
+        <div class="card-badges"><span class="badge-industry">Fitness</span><span class="badge-problem">Slow Follow-Up</span></div>
+      </div>
+      <div class="card-title">Re-engage members before they cancel</div>
+      <div class="card-problem">Members go quiet for 2 weeks and you don't notice until they're already gone.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Member Retention Automation</strong>Monitors attendance patterns and auto-triggers personalized check-ins, offers, or coach outreach when a member starts going quiet — before they churn.</div>
+      <div class="card-result"><div class="card-result-num">25%</div><div class="card-result-text">reduction in monthly member churn</div></div>
+    </div>
+
+    <!-- AUTO -->
+    <div class="use-card" data-industry="auto" data-problem="followup">
+      <div class="card-top">
+        <div class="card-icon">🚗</div>
+        <div class="card-badges"><span class="badge-industry">Auto</span><span class="badge-problem">Slow Follow-Up</span></div>
+      </div>
+      <div class="card-title">Follow up on every test drive lead automatically</div>
+      <div class="card-problem">Leads come in from multiple sources.&nbsp; Salespeople follow up inconsistently and deals fall through the cracks.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Lead Follow-Up Sequences</strong>Every inbound lead gets an instant personalized response, a multi-touch follow-up sequence, and a test drive booking link — regardless of which salesperson is on duty.</div>
+      <div class="card-result"><div class="card-result-num">2×</div><div class="card-result-text">test drive conversion from digital leads</div></div>
+    </div>
+
+    <div class="use-card" data-industry="auto" data-problem="reviews">
+      <div class="card-top">
+        <div class="card-icon">🌟</div>
+        <div class="card-badges"><span class="badge-industry">Auto</span><span class="badge-problem">Bad Reviews</span></div>
+      </div>
+      <div class="card-title">Build your reputation after every sale and service visit</div>
+      <div class="card-problem">Happy buyers don't leave reviews.&nbsp; Frustrated ones do.&nbsp; Your rating doesn't reflect your actual service.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Reputation Automation</strong>Post-sale and post-service texts automatically request Google reviews from satisfied customers, while routing any complaints to a manager before they go public.</div>
+      <div class="card-result"><div class="card-result-num">4.8★</div><div class="card-result-text">avg rating after 90 days of reputation automation</div></div>
+    </div>
+
+    <!-- GENERAL -->
+    <div class="use-card" data-industry="general" data-problem="social">
+      <div class="card-top">
+        <div class="card-icon">📣</div>
+        <div class="card-badges"><span class="badge-industry">Any Business</span><span class="badge-problem">Social Media</span></div>
+      </div>
+      <div class="card-title">Consistent social presence on autopilot</div>
+      <div class="card-problem">You know you should be posting but you never have time and don't know what to say.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Content Calendar + Auto-Post</strong>AI generates a month of on-brand posts from your services, promotions, and FAQs — scheduled across Facebook, Instagram, and Google Business automatically.</div>
+      <div class="card-result"><div class="card-result-num">30×</div><div class="card-result-text">more consistent posting vs doing it manually</div></div>
+    </div>
+
+    <div class="use-card" data-industry="general" data-problem="booking">
+      <div class="card-top">
+        <div class="card-icon">🗓️</div>
+        <div class="card-badges"><span class="badge-industry">Any Business</span><span class="badge-problem">Manual Booking</span></div>
+      </div>
+      <div class="card-title">Let customers book themselves — any time, any device</div>
+      <div class="card-problem">Booking still happens over the phone or email.&nbsp; It's slow, error-prone, and ties up your team.</div>
+      <div class="card-divider"></div>
+      <div class="card-solution"><strong>AI Booking Agent</strong>A conversational booking flow — via chat, text, or voice — that handles scheduling, confirmations, reminders, and rescheduling without any staff involvement.</div>
+      <div class="card-result"><div class="card-result-num">45%</div><div class="card-result-text">of bookings now happen outside business hours</div></div>
+    </div>
+
+  </div>
+  <div id="empty">
+    <h3>No matches found</h3>
+    <p>Try adjusting your filters or <button onclick="clearFilters()" style="background:none;border:none;color:#00E5A0;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:1rem;text-decoration:underline">clear all filters</button> to see everything.</p>
+  </div>
+</div>
+
+<!-- BOTTOM CTA -->
+<div id="bottom-cta">
+  <h2>DON'T SEE YOUR INDUSTRY?<br>WE'VE GOT YOU COVERED.</h2>
+  <p>These are just examples.&nbsp; Every business is different — book a free discovery call and we'll map out exactly where AI can make the biggest impact for you specifically.</p>
+  <button class="bp" onclick="window.location='index.html#final'">Book My Free Discovery Call</button>
+</div>
+
+<footer id="site-footer" style="background:#0D1220;border-top:1px solid #1E2A3A;padding:4rem 2rem 2rem;font-family:'DM Sans',sans-serif">
+  <div style="max-width:1060px;margin:0 auto">
+
+    <!-- TOP ROW -->
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:3rem;margin-bottom:3rem">
+
+      <!-- Logo + tagline + contact -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <a href="index.html" style="text-decoration:none">
+          <svg width="210" height="44" viewBox="0 0 210 44" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="1" width="40" height="42" rx="7" fill="#00E5A0"/>
+            <rect x="7"  y="14" width="3.5" height="10" rx="1.8" fill="#080C14"/>
+            <rect x="12" y="9"  width="3.5" height="20" rx="1.8" fill="#080C14"/>
+            <rect x="17" y="5"  width="3.5" height="28" rx="1.8" fill="#080C14"/>
+            <rect x="22" y="11" width="3.5" height="16" rx="1.8" fill="#080C14"/>
+            <rect x="27" y="18" width="3.5" height="8"  rx="1.8" fill="#080C14"/>
+            <rect x="32" y="12" width="3.5" height="14" rx="1.8" fill="#080C14"/>
+            <text x="50" y="18" font-family="'DM Sans',sans-serif" font-size="12" fill="#00E5A0" letter-spacing="1.5" font-weight="700">AI</text>
+            <text x="49" y="36" font-family="'DM Sans',sans-serif" font-size="16" fill="#F0F4FF" font-weight="500" letter-spacing="-0.4">Sounding Board</text>
+          </svg>
+        </a>
+        <div style="display:flex;flex-direction:column;gap:0.1rem">
+          <p style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#F0F4FF;letter-spacing:0.03em;line-height:1.2">AI WAITS FOR NO ONE.</p>
+          <p style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#00E5A0;letter-spacing:0.03em;line-height:1.2">NEITHER SHOULD YOU.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.3rem">
+          <p style="font-size:0.82rem;color:#8B9AB8;line-height:1.6">6605 Longshore St.&nbsp; Suite 240-212<br>Dublin, OH 43017-2774</p>
+          <a href="tel:6624398363" style="font-size:0.82rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">662-439-8363</a>
+          <a href="mailto:info@aisoundingboard.com" style="font-size:0.82rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#00E5A0'" onmouseout="this.style.color='#8B9AB8'">info@aisoundingboard.com</a>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h4 style="font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:#00E5A0;margin-bottom:1.2rem;font-weight:500">Navigation</h4>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <a href="index.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Home</a>
+          <a href="ai-ideas.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Solutions</a>
+          <a href="about.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">About</a>
+          <a href="contact.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Book a Call</a>
+        </div>
+      </div>
+
+      <!-- Get Started -->
+      <div>
+        <h4 style="font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:#00E5A0;margin-bottom:1.2rem;font-weight:500">Get Started</h4>
+        <p style="font-size:0.85rem;color:#8B9AB8;line-height:1.7;margin-bottom:1.2rem;font-weight:300">Ready to see what AI can do for your business?</p>
+        <a href="contact.html" style="display:inline-block;background:#00E5A0;color:#080C14;border-radius:2rem;padding:0.6rem 1.4rem;font-size:0.85rem;font-weight:500;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Book Free Call</a>
+      </div>
+
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="height:1px;background:#1E2A3A;margin-bottom:1.5rem"></div>
+
+    <!-- BOTTOM ROW -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <p style="font-size:0.78rem;color:#8B9AB8">© 2026 <span style="color:#00E5A0">AI Sounding Board</span> · AISoundingBoard.com · All rights reserved</p>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+        <a href="https://boost.ceo/privacy" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Privacy Policy</a>
+        <a href="https://boost.ceo/terms-conditions" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Terms of Service</a>
+        <a href="https://boost.ceo/cookie-policy" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Cookie Policy</a>
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+  @media(max-width:768px){
+    #site-footer > div > div:first-child{grid-template-columns:1fr 1fr !important;gap:2rem !important}
+    #site-footer > div > div:first-child > div:first-child{grid-column:1/-1}
+  }
+  @media(max-width:480px){
+    #site-footer > div > div:first-child{grid-template-columns:1fr !important}
+    #site-footer > div > div:last-child{flex-direction:column;align-items:flex-start;gap:0.8rem}
+  }
+  </style>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var industryBtns = document.querySelectorAll('[data-filter="industry"]');
+  var problemBtns = document.querySelectorAll('[data-filter="problem"]');
+  var cards = document.querySelectorAll('.use-card');
+  var countEl = document.getElementById('count-num');
+  var emptyEl = document.getElementById('empty');
+
+  function applyFilters(filterType, value) {
+    var visible = 0;
+    cards.forEach(function(card) {
+      var ind = card.getAttribute('data-industry');
+      var prob = card.getAttribute('data-problem');
+      var match = false;
+      if (filterType === 'industry') {
+        match = (value === 'all' || ind === value);
+      } else if (filterType === 'problem') {
+        match = (value === 'all' || prob === value);
+      } else {
+        match = true;
+      }
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    countEl.textContent = visible;
+    emptyEl.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  industryBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      industryBtns.forEach(function(b) { b.classList.remove('active'); });
+      problemBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-value') === 'all'); });
+      btn.classList.add('active');
+      applyFilters('industry', btn.getAttribute('data-value'));
+    });
+  });
+
+  problemBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      problemBtns.forEach(function(b) { b.classList.remove('active'); });
+      industryBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-value') === 'all'); });
+      btn.classList.add('active');
+      applyFilters('problem', btn.getAttribute('data-value'));
+    });
+  });
+
+  window.clearFilters = function() {
+    industryBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-value') === 'all'); });
+    problemBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-value') === 'all'); });
+    applyFilters('all', 'all');
+  };
+
+  document.getElementById('clear-btn').addEventListener('click', window.clearFilters);
+
+  applyFilters('all', 'all');
+});
+</script>
+</body>
+</html>
