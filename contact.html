@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Call — AI Sounding Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans', sans-serif;background:#080C14;color:#F0F4FF;overflow-x:hidden;line-height:1.7}
+
+/* NAV */
+#nav{background:#0D1220;border-bottom:1px solid #1E2A3A;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+#nav a{text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:1.5rem}
+.nav-links a{font-family:'DM Sans', sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:#F0F4FF}
+.nav-links a.active{color:#00E5A0;font-weight:500}
+.nav-btn{background:#00E5A0;color:#080C14;border:none;border-radius:2rem;padding:0.5rem 1.4rem;font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.95rem;cursor:pointer}
+#nav button:not(.hamburger){background:#00E5A0;color:#080C14;border:none;border-radius:2rem;padding:0.5rem 1.4rem;font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.95rem;cursor:pointer}
+
+/* HERO */
+#hero{background:#080C14;padding:4rem 2rem 3rem;text-align:center;border-bottom:1px solid #1E2A3A}
+.tag{display:inline-block;background:#0D2A1F;border:1px solid #00E5A040;border-radius:2rem;padding:0.3rem 1rem;font-size:0.78rem;color:#00E5A0;letter-spacing:0.05em;margin-bottom:1.2rem}
+#hero h1{font-family:'Bebas Neue', sans-serif;font-size:clamp(2.5rem, 7vw, 5rem);line-height:0.95;color:#F0F4FF;margin-bottom:0.8rem}
+#hero h1 i{color:#00E5A0;font-style:normal}
+#hero p{font-size:1.05rem;color:#8B9AB8;max-width:500px;margin:0 auto;line-height:1.7;font-weight:300}
+
+/* MAIN LAYOUT */
+#main{max-width:1060px;margin:0 auto;padding:4rem 2rem 6rem;display:grid;grid-template-columns:1fr 420px;gap:4rem;align-items:start}
+
+/* LEFT — WHAT TO EXPECT */
+.expect{display:flex;flex-direction:column;gap:2rem}
+.slbl{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:#00E5A0;display:block;margin-bottom:0.5rem}
+.sh{font-family:'Bebas Neue', sans-serif;font-size:clamp(1.8rem, 3vw, 2.8rem);color:#F0F4FF;line-height:1;margin-bottom:0.8rem}
+.expect-steps{display:flex;flex-direction:column;gap:1.2rem;margin-top:0.5rem}
+.expect-step{display:flex;gap:1.2rem;align-items:flex-start}
+.step-num{width:36px;height:36px;min-width:36px;border-radius:50%;background:#0A2A1A;border:1px solid #00E5A030;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue', sans-serif;font-size:1rem;color:#00E5A0;line-height:1}
+.step-body strong{display:block;font-size:1rem;font-weight:500;color:#F0F4FF;margin-bottom:0.2rem}
+.step-body p{font-size:0.95rem;color:#8B9AB8;line-height:1.6}
+
+/* PROMISE CARDS */
+.promise-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.promise-card{background:#0D1220;border:1px solid #1E2A3A;border-radius:12px;padding:1.2rem;display:flex;gap:0.8rem;align-items:flex-start}
+.promise-ico{font-size:1.2rem;flex-shrink:0;margin-top:0.1rem}
+.promise-card strong{display:block;font-size:0.9rem;font-weight:500;color:#F0F4FF;margin-bottom:0.2rem}
+.promise-card p{font-size:0.82rem;color:#8B9AB8;line-height:1.5;margin:0}
+
+/* RIGHT — FORM */
+.form-wrap{background:#0D1220;border:1px solid #1E2A3A;border-radius:20px;padding:2.5rem;position:sticky;top:90px}
+.form-wrap h3{font-family:'Bebas Neue', sans-serif;font-size:1.8rem;color:#F0F4FF;margin-bottom:0.4rem;letter-spacing:0.02em}
+.form-wrap .form-sub{font-size:0.9rem;color:#8B9AB8;margin-bottom:2rem;font-weight:300}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.2rem}
+.form-group label{font-size:0.82rem;color:#8B9AB8;letter-spacing:0.03em}
+.form-group input,
+.form-group select,
+.form-group textarea{background:#080C14;border:1px solid #1E2A3A;border-radius:10px;padding:0.75rem 1rem;font-family:'DM Sans', sans-serif;font-size:0.95rem;color:#F0F4FF;outline:none;transition:border-color 0.2s;width:100%}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{border-color:#00E5A060}
+.form-group select{appearance:none;background-image:url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='2, 4 6, 8 10, 4' stroke='%238B9AB8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;cursor:pointer}
+.form-group select option{background:#0D1220;color:#F0F4FF}
+.form-group textarea{resize:vertical;min-height:100px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.submit-btn{width:100%;background:#00E5A0;color:#080C14;border:none;border-radius:2rem;padding:1rem;font-family:'DM Sans', sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:opacity 0.2s;margin-top:0.5rem;letter-spacing:0.02em}
+.submit-btn:hover{opacity:0.85}
+.form-note{font-size:0.78rem;color:#8B9AB8;text-align:center;margin-top:0.8rem}
+
+/* SUCCESS STATE */
+#success{display:none;text-align:center;padding:3rem 1rem}
+#success .success-ico{font-size:3rem;margin-bottom:1rem}
+#success h3{font-family:'Bebas Neue', sans-serif;font-size:2rem;color:#00E5A0;margin-bottom:0.5rem}
+#success p{font-size:0.95rem;color:#8B9AB8;line-height:1.7}
+
+/* BOTTOM STRIP */
+#strip{background:#0A1F15;border-top:1px solid #00E5A025;padding:3rem 2rem;text-align:center}
+#strip p{color:#8B9AB8;font-size:0.95rem;max-width:500px;margin:0 auto;line-height:1.7}
+#strip strong{color:#F0F4FF;font-weight:500}
+
+footer{background:#0D1220;border-top:1px solid #1E2A3A;padding:1.5rem 2rem;text-align:center;font-size:0.82rem;color:#8B9AB8}
+footer b{color:#00E5A0;font-weight:400}
+
+/* MOBILE */
+@media(max-width:768px){
+  #main{grid-template-columns:1fr !important;gap:2rem;padding:2rem 1.2rem 4rem}
+  .form-wrap{position:relative;top:0;padding:1.6rem}
+  .promise-grid{grid-template-columns:1fr !important}
+  .form-row{grid-template-columns:1fr !important}
+  .nav-links .hide-mobile{display:none}
+  #hero{padding:3rem 1.2rem 2rem}
+  .expect-steps{gap:1rem}
+  #strip{padding:2rem 1.2rem}
+  .form-group input, .form-group select, .form-group textarea{font-size:16px}
+}
+@media(max-width:480px){
+  .form-wrap h3{font-size:1.5rem}
+  .expect-step{gap:0.8rem}
+  .step-num{width:30px;height:30px;min-width:30px;font-size:0.85rem}
+}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+</style>
+
+<style id="mobile-text-boost">
+@media(max-width:768px){
+  /* Base body text */
+  body{font-size:16px !important}
+
+  /* Paragraphs and descriptions */
+  p, .sub, .ssub, .card-solution, .step-card p, .sc p, .scard p,
+  .val-card p, .story-block p, .promise-card p, .expect-step p,
+  .sbar p, .sb-text p, .pi p, .prob-item p, .card-problem,
+  .card-solution p, .form-sub, .gauge-caption, .fnote{
+    font-size:1rem !important;
+    line-height:1.75 !important;
+  }
+
+  /* Section subtitles */
+  .ssub, #hero p, #hero .sub{font-size:1.05rem !important}
+
+  /* Card titles */
+  .scard h3, .sc h3, .val-card h3, .step-card h3,
+  .use-card .card-title{font-size:1.05rem !important}
+
+  /* Labels, badges, tiny text */
+  .slbl, .sbadge, .badge-industry, .badge-problem,
+  .filter-label, .filter-btn, .section-label,
+  .sitem .l, .stat-item .l{font-size:0.8rem !important}
+
+  /* Stat numbers */
+  .sitem .n, .sbar-n, .sb-num, .stat-bar-num,
+  .gauge-pct, .card-result-num{font-size:1.8rem !important}
+
+  /* Nav button */
+  #nav button:not(.hamburger), .nav-btn:not(.hamburger){font-size:0.9rem !important;padding:0.5rem 1.1rem !important}
+
+  /* Footer text */
+  footer, #site-footer{font-size:0.85rem !important}
+  #site-footer a, #site-footer p{font-size:0.85rem !important}
+
+  /* Form labels and inputs */
+  .form-group label{font-size:0.9rem !important}
+  .form-group input,
+  .form-group select,
+  .form-group textarea{font-size:1rem !important}
+
+  /* Strong text inside cards */
+  .pi strong, .promise-card strong, .sbar strong,
+  .sb-text strong, .step-body strong{font-size:1rem !important}
+
+  /* Pull quote on about page */
+  .pull-quote p{font-size:1rem !important}
+
+  /* Card result text */
+  .card-result-text{font-size:0.85rem !important}
+
+  /* Filter buttons on ideas page */
+  .filter-btn{font-size:0.78rem !important;padding:0.35rem 0.75rem !important}
+
+  /* Midpage CTA text */
+  #mcta p, .mid-cta p, .cta-band p{font-size:1rem !important}
+
+  /* Bottom CTA note */
+  .fnote, .final-note{font-size:0.85rem !important}
+}
+
+/* HAMBURGER NAV */
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px 10px;background:none;border:none;z-index:200;border-radius:2rem}
+.hamburger span{display:block;width:22px;height:2px;background:#080C14;border-radius:2px;transition:all 0.3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:#0D1220;border-bottom:1px solid #1E2A3A;padding:1.2rem 2rem;flex-direction:column;gap:1.2rem;z-index:199}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-family:'DM Sans',sans-serif;font-size:1.05rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s;padding:0.3rem 0;border-bottom:1px solid #1E2A3A}
+.mobile-menu a:last-of-type{border-bottom:none}
+.mobile-menu a:hover{color:#F0F4FF}
+.mobile-menu button{width:100%;margin-top:0.5rem}
+@media(max-width:768px){
+  .nav-right .nav-link{display:none}
+  .nav-right > button:not(.hamburger){display:none}
+  .hamburger{display:flex;background:#00E5A0;padding:8px 12px}
+  #nav{position:relative}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <a href="index.html" style="text-decoration:none;display:flex;align-items:center"><svg width="250" height="52" viewBox="0 0 210 44" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="1" width="40" height="42" rx="7" fill="#00E5A0"/><rect x="7" y="14" width="3.5" height="10" rx="1.8" fill="#080C14"/><rect x="12" y="9" width="3.5" height="20" rx="1.8" fill="#080C14"/><rect x="17" y="5" width="3.5" height="28" rx="1.8" fill="#080C14"/><rect x="22" y="11" width="3.5" height="16" rx="1.8" fill="#080C14"/><rect x="27" y="18" width="3.5" height="8" rx="1.8" fill="#080C14"/><rect x="32" y="12" width="3.5" height="14" rx="1.8" fill="#080C14"/><text x="50" y="18" font-family="'DM Sans',sans-serif" font-size="12" fill="#00E5A0" letter-spacing="1.5" font-weight="700">AI</text><text x="49" y="36" font-family="'DM Sans',sans-serif" font-size="16" fill="#F0F4FF" font-weight="500" letter-spacing="-0.4">Sounding Board</text></svg></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Home</a>
+    <a href="ai-ideas.html" class="nav-link" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Solutions</a>
+    <a href="about.html" class="nav-link" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">About</a>
+    <button onclick="window.location='contact.html'">Book Free Call</button>
+    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="ai-ideas.html">Solutions</a>
+    <a href="about.html">About</a>
+    <button style="width:100%" onclick="window.location='contact.html'">Book Free Call</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="tag">📞 Free · No commitment · 30 minutes</div>
+  <h1>LET'S TALK ABOUT<br><i>YOUR BUSINESS.</i></h1>
+  <p>No pitch deck.&nbsp; No pressure.&nbsp; Just an honest conversation about where AI can make the biggest difference for you.</p>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- LEFT -->
+  <div class="expect">
+    <div>
+      <span class="slbl">What to expect</span>
+      <h2 class="sh">YOUR FREE DISCOVERY<br>CALL IN 3 STEPS</h2>
+    </div>
+
+    <div class="expect-steps">
+      <div class="expect-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>We listen</strong>
+          <p>Tell us about your business, your team, your tools, and where the friction is.&nbsp; No agenda — just questions.</p>
+        </div>
+      </div>
+      <div class="expect-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>We map the opportunity</strong>
+          <p>We identify the 2-3 highest-impact areas where AI can save you time, capture more leads, or reduce costs.</p>
+        </div>
+      </div>
+      <div class="expect-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>You get a clear next step</strong>
+          <p>Whether that's a full AI audit, a custom integration, or just a direction to explore — you'll leave with clarity, not a sales pitch.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <span class="slbl">Our promises to you</span>
+      <div class="promise-grid">
+        <div class="promise-card"><div class="promise-ico">🎯</div><div><strong>No hard sell</strong><p>We'll never pressure you into anything.&nbsp; If we're not the right fit, we'll tell you.</p></div></div>
+        <div class="promise-card"><div class="promise-ico">⏱️</div><div><strong>Respects your time</strong><p>30 minutes max.&nbsp; We come prepared and get straight to what matters.</p></div></div>
+        <div class="promise-card"><div class="promise-ico">🔒</div><div><strong>Confidential</strong><p>Everything you share stays between us.&nbsp; No data shared, no follow-up spam.</p></div></div>
+        <div class="promise-card"><div class="promise-ico">💡</div><div><strong>Real insights</strong><p>You'll walk away with at least one actionable idea — even if we never work together.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT — FORM -->
+  <div class="form-wrap">
+    <div id="form-area">
+      <h3>BOOK YOUR FREE CALL</h3>
+      <p class="form-sub">Fill out the form and we'll reach out within 1 business day to confirm your time.</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input type="text" id="fname" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input type="text" id="lname" placeholder="Smith">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Business Email *</label>
+        <input type="email" id="email" placeholder="john@yourbusiness.com">
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="(614) 555-0100">
+      </div>
+
+      <div class="form-group">
+        <label>Business Name *</label>
+        <input type="text" id="biz" placeholder="Your Business LLC">
+      </div>
+
+      <div class="form-group">
+        <label>Industry</label>
+        <select id="industry">
+          <option value="" disabled selected>Select your industry</option>
+          <option>Roofing</option>
+          <option>Restaurant</option>
+          <option>Dental / Medical</option>
+          <option>Legal</option>
+          <option>Real Estate</option>
+          <option>HVAC / Plumbing</option>
+          <option>Retail</option>
+          <option>Fitness / Gyms</option>
+          <option>Auto / Dealerships</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Biggest challenge right now</label>
+        <select id="challenge">
+          <option value="" disabled selected>What's your biggest pain point?</option>
+          <option>Missed calls / no after-hours coverage</option>
+          <option>Slow lead follow-up</option>
+          <option>Bad or no online reviews</option>
+          <option>Manual appointment booking</option>
+          <option>Repetitive customer questions</option>
+          <option>No-shows / cancellations</option>
+          <option>Slow quote / estimate process</option>
+          <option>Poor social media presence</option>
+          <option>Not sure yet</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Anything else we should know?</label>
+        <textarea id="notes" placeholder="Tell us more about your business or what you're hoping to get out of this call..."></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">Book My Free Discovery Call →</button>
+      <p class="form-note">We'll reach out within 1 business day · No spam, ever</p>
+    </div>
+
+    <div id="success">
+      <div class="success-ico">✅</div>
+      <h3>YOU'RE ALL SET!</h3>
+      <p>Thanks for reaching out.&nbsp; We'll be in touch within 1 business day to confirm your discovery call time.<br><br>In the meantime, browse our <a href="ai-ideas.html" style="color:#00E5A0;text-decoration:none">AI Solutions</a> to see what might be possible for your business.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- STRIP -->
+<div id="strip">
+  <p>Prefer to reach out directly? Email us at <strong>hello@aisoundingboard.com</strong> and we'll get back to you within 1 business day.</p>
+</div>
+
+<footer id="site-footer" style="background:#0D1220;border-top:1px solid #1E2A3A;padding:4rem 2rem 2rem;font-family:'DM Sans',sans-serif">
+  <div style="max-width:1060px;margin:0 auto">
+
+    <!-- TOP ROW -->
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:3rem;margin-bottom:3rem">
+
+      <!-- Logo + tagline + contact -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <a href="index.html" style="text-decoration:none">
+          <svg width="210" height="44" viewBox="0 0 210 44" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="1" width="40" height="42" rx="7" fill="#00E5A0"/>
+            <rect x="7"  y="14" width="3.5" height="10" rx="1.8" fill="#080C14"/>
+            <rect x="12" y="9"  width="3.5" height="20" rx="1.8" fill="#080C14"/>
+            <rect x="17" y="5"  width="3.5" height="28" rx="1.8" fill="#080C14"/>
+            <rect x="22" y="11" width="3.5" height="16" rx="1.8" fill="#080C14"/>
+            <rect x="27" y="18" width="3.5" height="8"  rx="1.8" fill="#080C14"/>
+            <rect x="32" y="12" width="3.5" height="14" rx="1.8" fill="#080C14"/>
+            <text x="50" y="18" font-family="'DM Sans',sans-serif" font-size="12" fill="#00E5A0" letter-spacing="1.5" font-weight="700">AI</text>
+            <text x="49" y="36" font-family="'DM Sans',sans-serif" font-size="16" fill="#F0F4FF" font-weight="500" letter-spacing="-0.4">Sounding Board</text>
+          </svg>
+        </a>
+        <div style="display:flex;flex-direction:column;gap:0.1rem">
+          <p style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#F0F4FF;letter-spacing:0.03em;line-height:1.2">AI WAITS FOR NO ONE.</p>
+          <p style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#00E5A0;letter-spacing:0.03em;line-height:1.2">NEITHER SHOULD YOU.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.3rem">
+          <p style="font-size:0.82rem;color:#8B9AB8;line-height:1.6">6605 Longshore St.&nbsp; Suite 240-212<br>Dublin, OH 43017-2774</p>
+          <a href="tel:6624398363" style="font-size:0.82rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">662-439-8363</a>
+          <a href="mailto:info@aisoundingboard.com" style="font-size:0.82rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#00E5A0'" onmouseout="this.style.color='#8B9AB8'">info@aisoundingboard.com</a>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h4 style="font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:#00E5A0;margin-bottom:1.2rem;font-weight:500">Navigation</h4>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <a href="index.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Home</a>
+          <a href="ai-ideas.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Solutions</a>
+          <a href="about.html" style="font-size:0.88rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">About</a>
+          </div>
+      </div>
+
+      <!-- Get Started -->
+      <div>
+        <h4 style="font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:#00E5A0;margin-bottom:1.2rem;font-weight:500">Get Started</h4>
+        <p style="font-size:0.85rem;color:#8B9AB8;line-height:1.7;margin-bottom:1.2rem;font-weight:300">Ready to see what AI can do for your business?</p>
+        <a href="contact.html" style="display:inline-block;background:#00E5A0;color:#080C14;border-radius:2rem;padding:0.6rem 1.4rem;font-size:0.85rem;font-weight:500;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Book Free Call</a>
+      </div>
+
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="height:1px;background:#1E2A3A;margin-bottom:1.5rem"></div>
+
+    <!-- BOTTOM ROW -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <p style="font-size:0.78rem;color:#8B9AB8">© 2026 <span style="color:#00E5A0">AI Sounding Board</span> · AISoundingBoard.com · All rights reserved</p>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+        <a href="https://boost.ceo/privacy" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Privacy Policy</a>
+        <a href="https://boost.ceo/terms-conditions" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Terms of Service</a>
+        <a href="https://boost.ceo/cookie-policy" target="_blank" style="font-size:0.78rem;color:#8B9AB8;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0F4FF'" onmouseout="this.style.color='#8B9AB8'">Cookie Policy</a>
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+  @media(max-width:768px){
+    #site-footer > div > div:first-child{grid-template-columns:1fr 1fr !important;gap:2rem !important}
+    #site-footer > div > div:first-child > div:first-child{grid-column:1/-1}
+  }
+  @media(max-width:480px){
+    #site-footer > div > div:first-child{grid-template-columns:1fr !important}
+    #site-footer > div > div:last-child{flex-direction:column;align-items:flex-start;gap:0.8rem}
+  }
+  </style>
+</footer>
+
+<script>
+function submitForm() {
+  var fname = document.getElementById('fname').value.trim();
+  var lname = document.getElementById('lname').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var biz = document.getElementById('biz').value.trim();
+
+  if (!fname || !lname || !email || !biz) {
+    alert('Please fill in your name, email, and business name to continue.');
+    return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+}
+
+// Animate form fields in on load
+document.addEventListener('DOMContentLoaded', function() {
+  var fields = document.querySelectorAll('.form-group');
+  fields.forEach(function(f, i) {
+    f.style.opacity = '0';
+    f.style.transform = 'translateY(10px)';
+    f.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    setTimeout(function() {
+      f.style.opacity = '1';
+      f.style.transform = 'translateY(0)';
+    }, 100 + i * 60);
+  });
+});
+</script>
+
+
+<script>
+(function(){
+  var btn = document.getElementById('hamburger-btn');
+  var menu = document.getElementById('mobile-menu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    btn.classList.toggle('open');
+    menu.classList.toggle('open');
+  });
+  // close when a link is clicked
+  menu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      btn.classList.remove('open');
+      menu.classList.remove('open');
+    });
+  });
+})();
+</script>
+</body>
+</html>
