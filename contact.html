@@ -527,40 +527,7 @@ footer b{color:#00E5A0;font-weight:400}
   </style>
 </footer>
 
-<script>
-function submitForm() {
-  var fname = document.getElementById('fname').value.trim();
-  var lname = document.getElementById('lname').value.trim();
-  var email = document.getElementById('email').value.trim();
-  var biz = document.getElementById('biz').value.trim();
 
-  if (!fname || !lname || !email || !biz) {
-    alert('Please fill in your name, email, and business name to continue.');
-    return;
-  }
-  if (!email.includes('@') || !email.includes('.')) {
-    alert('Please enter a valid email address.');
-    return;
-  }
-
-  document.getElementById('form-area').style.display = 'none';
-  document.getElementById('success').style.display = 'block';
-}
-
-// Animate form fields in on load
-document.addEventListener('DOMContentLoaded', function() {
-  var fields = document.querySelectorAll('.form-group');
-  fields.forEach(function(f, i) {
-    f.style.opacity = '0';
-    f.style.transform = 'translateY(10px)';
-    f.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-    setTimeout(function() {
-      f.style.opacity = '1';
-      f.style.transform = 'translateY(0)';
-    }, 100 + i * 60);
-  });
-});
-</script>
 
 
 <script>
@@ -600,6 +567,60 @@ function toggleFaq(btn) {
     btn.parentElement.style.borderColor = '#1E2A3A';
   }
 }
+</script>
+
+<script>
+function submitForm() {
+  var fname = document.getElementById('fname').value.trim();
+  var lname = document.getElementById('lname').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var biz = document.getElementById('biz').value.trim();
+
+  if (!fname || !lname || !email || !biz) {
+    alert('Please fill in your name, email, and business name to continue.');
+    return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  // Submit to GHL in the background
+  var ghlData = {
+    first_name: fname,
+    last_name: lname,
+    email: email,
+    phone: document.getElementById('phone').value.trim(),
+    company_name: biz,
+    industry: document.getElementById('industry').value,
+    message: 'Biggest Challenge: ' + document.getElementById('challenge').value + '\n\nNotes: ' + document.getElementById('notes').value.trim()
+  };
+
+  fetch('https://api.boost.ceo/widget/form/tn73NzAWYBKbXJuXwA9o', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(ghlData),
+    mode: 'no-cors'
+  }).catch(function(){});
+
+  // Show success state
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+}
+
+// Animate form fields in on load
+document.addEventListener('DOMContentLoaded', function() {
+  var fields = document.querySelectorAll('.form-group');
+  fields.forEach(function(f, i) {
+    f.style.opacity = '0';
+    f.style.transform = 'translateY(10px)';
+    f.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    setTimeout(function() {
+      f.style.opacity = '1';
+      f.style.transform = 'translateY(0)';
+    }, 100 + i * 60);
+  });
+});
 </script>
 </body>
 </html>
