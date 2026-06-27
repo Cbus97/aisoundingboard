@@ -585,14 +585,7 @@ function submitForm() {
     return;
   }
 
-  // Build a hidden form and submit it to GHL webhook
-  var ghlForm = document.createElement('form');
-  ghlForm.method = 'POST';
-  ghlForm.action = 'https://services.leadconnectorhq.com/hooks/nhJgmfV1HZDydvgamxiY/webhook-trigger/da11b4bd-b5a5-4f6d-ad7a-f58f7c60b80f';
-  ghlForm.target = 'ghl-hidden-frame';
-  ghlForm.style.display = 'none';
-
-  var fields = {
+  var payload = {
     first_name: fname,
     last_name: lname,
     email: email,
@@ -604,19 +597,23 @@ function submitForm() {
     source: 'AI Sounding Board Website'
   };
 
-  Object.keys(fields).forEach(function(key) {
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = fields[key];
-    ghlForm.appendChild(input);
+  // POST JSON to GHL webhook
+  fetch('https://services.leadconnectorhq.com/hooks/nhJgmfV1HZDydvgamxiY/webhook-trigger/da11b4bd-b5a5-4f6d-ad7a-f58f7c60b80f', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(response) {
+    console.log('GHL webhook response:', response.status);
+  })
+  .catch(function(err) {
+    console.log('GHL webhook error:', err);
   });
 
-  document.body.appendChild(ghlForm);
-  ghlForm.submit();
-  document.body.removeChild(ghlForm);
-
-  // Show success state
+  // Show success state right away — don't wait for GHL response
   document.getElementById('form-area').style.display = 'none';
   document.getElementById('success').style.display = 'block';
 }
@@ -635,8 +632,5 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-
-<!-- Hidden iframe to absorb the form POST response without redirecting the page -->
-<iframe name="ghl-hidden-frame" style="display:none"></iframe>
 </body>
 </html>
