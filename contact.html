@@ -585,23 +585,36 @@ function submitForm() {
     return;
   }
 
-  // Submit to GHL in the background
-  var ghlData = {
+  // Build a hidden form and submit it to GHL webhook
+  var ghlForm = document.createElement('form');
+  ghlForm.method = 'POST';
+  ghlForm.action = 'https://services.leadconnectorhq.com/hooks/nhJgmfV1HZDydvgamxiY/webhook-trigger/da11b4bd-b5a5-4f6d-ad7a-f58f7c60b80f';
+  ghlForm.target = 'ghl-hidden-frame';
+  ghlForm.style.display = 'none';
+
+  var fields = {
     first_name: fname,
     last_name: lname,
     email: email,
     phone: document.getElementById('phone').value.trim(),
     company_name: biz,
     industry: document.getElementById('industry').value,
-    message: 'Biggest Challenge: ' + document.getElementById('challenge').value + '\n\nNotes: ' + document.getElementById('notes').value.trim()
+    biggest_challenge: document.getElementById('challenge').value,
+    notes: document.getElementById('notes').value.trim(),
+    source: 'AI Sounding Board Website'
   };
 
-  fetch('https://api.boost.ceo/widget/form/tn73NzAWYBKbXJuXwA9o', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(ghlData),
-    mode: 'no-cors'
-  }).catch(function(){});
+  Object.keys(fields).forEach(function(key) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = fields[key];
+    ghlForm.appendChild(input);
+  });
+
+  document.body.appendChild(ghlForm);
+  ghlForm.submit();
+  document.body.removeChild(ghlForm);
 
   // Show success state
   document.getElementById('form-area').style.display = 'none';
@@ -622,5 +635,8 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+<!-- Hidden iframe to absorb the form POST response without redirecting the page -->
+<iframe name="ghl-hidden-frame" style="display:none"></iframe>
 </body>
 </html>
